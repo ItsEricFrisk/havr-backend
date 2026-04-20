@@ -1,6 +1,5 @@
 package com.itsericfrisk.havr.service;
 
-import com.itsericfrisk.havr.dto.AuthResponse;
 import com.itsericfrisk.havr.dto.LoginRequest;
 import com.itsericfrisk.havr.dto.RegisterRequest;
 import com.itsericfrisk.havr.model.Roles;
@@ -45,7 +44,7 @@ public class AuthService {
      * @param loginRequest Required user data
      * @return accessToken and its validity time
      */
-    public AuthResponse login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
         );
@@ -58,9 +57,7 @@ public class AuthService {
                 .map(auth -> auth.replace("ROLE_", "")).toList();
         User user = repository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        String accessToken = jwtUtils.generateAccessToken(user.getId(), roles);
-
-        return AuthResponse.response(accessToken, jwtUtils.getAccessTokenValiditySeconds());
+        return jwtUtils.generateAccessToken(user.getId(), roles);
     }
 
 }

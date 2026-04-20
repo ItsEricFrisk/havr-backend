@@ -1,5 +1,6 @@
 package com.itsericfrisk.havr.integration;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,18 +34,18 @@ class AuthControllerTest {
     @Test
     @DisplayName("Register user, login and fetch categories")
     void registerUser_login_fetchCategories() throws Exception {
-        String adminToken = login(ADMIN_EMAIL, ADMIN_PASS);
-        registerUser(adminToken);
-        String userToken = login(USER_EMAIL, USER_PASS);
+        Cookie adminCookie = login(ADMIN_EMAIL, ADMIN_PASS);
+        registerUser(adminCookie);
+        Cookie userCookie = login(USER_EMAIL, USER_PASS);
 
         mockMvc.perform(get("/categories")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + userToken))
+                        .cookie(userCookie))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]").exists());
     }
 
-    private void registerUser(String token) throws Exception {
+    private void registerUser(Cookie adminCookie) throws Exception {
         String body = """
                 {"email": "email@email.com", "name": "user", "password": "password123"}
                 """;
@@ -53,23 +53,19 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body)
-                        .header("Authorization", "Bearer " + token))
+                        .cookie(adminCookie))
                 .andExpect(status().isCreated());
     }
 
-    private String login(String email, String password) throws Exception {
+    private Cookie login(String email, String password) throws Exception {
         String body = """
                 {"email": "%s", "password": "%s"}
                 """.formatted(email, password);
 
-        String response = mockMvc.perform(post("/auth/login")
+        return mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        return new ObjectMapper()
-                .readTree(response)
-                .get("accessToken").asString();
+                .andReturn().getResponse().getCookie("jwt");
     }
 }
