@@ -38,6 +38,7 @@ Built with Spring Boot, JWT authentication, and PostgreSQL.
    spring.sql.init.mode=always
    spring.jpa.hibernate.ddl-auto=create-drop
    jwt.secret=REPLACE_WITH_YOUR_SECRET_MIN_32_CHARS
+   cors.allowed-origins=http://localhost:5173
 ```
 
 3. Create `src/test/resources/application-test.properties`:
@@ -51,6 +52,7 @@ Built with Spring Boot, JWT authentication, and PostgreSQL.
    spring.sql.init.mode=never
    spring.jpa.defer-datasource-initialization=false
    jwt.secret=REPLACE_WITH_YOUR_SECRET_MIN_32_CHARS
+   cors.allowed-origins=http://localhost:5173
 ```
 
 4. Run the application
