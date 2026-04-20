@@ -1,6 +1,7 @@
 package com.itsericfrisk.havr.service;
 
 import com.itsericfrisk.havr.dto.LoginRequest;
+import com.itsericfrisk.havr.dto.MeResponse;
 import com.itsericfrisk.havr.dto.RegisterRequest;
 import com.itsericfrisk.havr.model.Roles;
 import com.itsericfrisk.havr.model.User;
@@ -60,4 +61,16 @@ public class AuthService {
         return jwtUtils.generateAccessToken(user.getId(), roles);
     }
 
+    /**
+     * Returns info about the user
+     *
+     * @param userId Long
+     * @return MeResponse with user info
+     */
+    public MeResponse me(Long userId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return new MeResponse(user.getId(), user.getName(), user.getEmail(), user.getRole());
+    }
 }
