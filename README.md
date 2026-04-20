@@ -40,21 +40,6 @@ Built with Spring Boot, JWT authentication, and PostgreSQL.
    jwt.secret=REPLACE_WITH_YOUR_SECRET_MIN_32_CHARS
    cors.allowed-origins=http://localhost:5173
 ```
-
-3. Create `src/test/resources/application-test.properties`:
-```properties
-   spring.datasource.url=jdbc:h2:mem:havrdb;DB_CLOSE_DELAY=-1
-   spring.datasource.driverClassName=org.h2.Driver
-   spring.datasource.username=sa
-   spring.datasource.password=sa
-   spring.jpa.hibernate.ddl-auto=create-drop
-   spring.jpa.show-sql=true
-   spring.sql.init.mode=never
-   spring.jpa.defer-datasource-initialization=false
-   jwt.secret=REPLACE_WITH_YOUR_SECRET_MIN_32_CHARS
-   cors.allowed-origins=http://localhost:5173
-```
-
 4. Run the application
 ```bash
    ./mvnw spring-boot:run
